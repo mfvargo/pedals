@@ -1,10 +1,13 @@
+use std::sync::mpsc;
 use std::thread::{self, sleep};
 use std::time::Duration;
 
 use rtjam_rust::pedals::pedal_board::PedalBoard;
+use rtjam_rust::sound::jack_thread;
 use rtjam_rust::utils::get_my_mac_address;
 use rtjam_rust::common::jam_nation_api::JamNationApi;
 use rtjam_rust::sound::param_message::ParamMessage;
+use rtjam_rust::JamEngine;
 use serde::Serialize;
 use serde_json::{json, Value};
 use tauri::{ipc::Channel, Error};
@@ -26,7 +29,8 @@ pub struct JamUnit {
     board: PedalBoard,
     token: String,
     pinging: bool,
-    on_event: Option<Channel<UnitMessage>>,
+    cmd_tx: Option<mpsc::Sender<ParamMessage>>,
+    pedal_tx: Option<mpsc::Sender<PedalBoard>>,
 }
 
 impl JamUnit {
@@ -35,13 +39,17 @@ impl JamUnit {
             board: PedalBoard::new(0),
             token: String::from(""),
             pinging: false,
-            on_event: None,
+            cmd_tx: None,
+            pedal_tx: None,
         }
     }
     pub fn start(&mut self, ev: Channel<UnitMessage>) -> Result<Value, Error> {
         println!("start me up!");
 
-        self.on_event = Some(ev);
+        if self.pinging {
+            println!("preventing double start");
+            return Ok(json!(self.token));
+        }
 
         // Insert pedals in reverse order (it puts each on at the front)
         for pedal in ["Champ", "Sigma Reverb", "Delay", "Compressor"] {
@@ -63,18 +71,66 @@ impl JamUnit {
                 let _res = Self::jam_unit_ping_thread(api);
             });
         }
+
+        // This is the channel the audio engine will use to send us status data
+        let (status_data_tx, status_data_rx): (
+            mpsc::Sender<serde_json::Value>,
+            mpsc::Receiver<serde_json::Value>,
+        ) = mpsc::channel();
+
+        // This is the channel we will use to send commands to the jack engine
+        let (command_tx, command_rx): (
+            mpsc::Sender<ParamMessage>, 
+            mpsc::Receiver<ParamMessage>
+        ) = mpsc::channel();
+        // Save the sender end in the jamUnit
+        self.cmd_tx = Some(command_tx);
+
+        // This is the channel we will send manufactured pedal boards to
+        let (pedal_tx, pedal_rx): (
+            mpsc::Sender<PedalBoard>, 
+            mpsc::Receiver<PedalBoard>
+        ) = mpsc::channel();
+        // Save the sender end in the jamUnit
+        self.pedal_tx = Some(pedal_tx);
+
+        let token_copy = self.token.clone();
+
+        match JamEngine::new(None, status_data_tx, command_rx, pedal_rx, &token_copy, git_hash, false) {
+            Ok(engine) => {
+                    // Now we have the engine, jack_thread
+                let _jack_thread_handle = thread::spawn(move || {
+                    let _res = jack_thread::run(engine);
+                });
+            }
+            Err(e) => {
+                dbg!(e);
+            }
+        }
+
+        // Spawn the message forwarder
+        let _ping_handle = thread::spawn(move || {
+            let _res = Self::status_msg_forwarder(ev, status_data_rx);
+        });
+
+
         Ok(json!(self.token))
+
     }
 
-    pub fn send_levels(&mut self) -> Result<(), Error> {
-        match &self.on_event {
-            Some(ev) => {
-                ev.send(UnitMessage::Level { data: json!({}) })?;
-                ev.send(UnitMessage::Boards { data: self.board.as_json(0) })?;
+    // Use this to send messages to the jamEnging
+    pub fn send_command(&mut self, cmd: Value) -> Result<(), Error> {
+        // Convert message into a ParamMessage
+        match ParamMessage::from_json(&cmd) {
+            Ok(p) => {
+                if let Some(tx) = &self.cmd_tx {
+                    tx.send(p);
+                }
             }
-            None => {
-                println!("no event to sent message On");
+            Err(e) => {
+                dbg!(e);
             }
+
         }
         Ok(())
     }
@@ -106,6 +162,26 @@ impl JamUnit {
             // This is the timer between registration attempts
             sleep(Duration::new(2, 0));
         }
+    }
+
+    // This message needs to get formatted and stuff
+    fn status_msg_forwarder(ev: Channel<UnitMessage>, msg: mpsc::Receiver<Value>) -> Result<(), Error> {
+        // My job is to receive status messages from the jamEngine and convert them into events
+        let mut looping = true;
+        while looping {
+            match msg.recv() {
+                Ok(m) => {
+                    // Got a status message
+                    println!("msg: {:?}", m);
+                    ev.send(UnitMessage::Level { data: m })?;
+                }
+                Err(e) => {
+                    looping = false;
+                    dbg!(e);
+                }
+            }
+        }
+        Ok(())
     }
     
 }

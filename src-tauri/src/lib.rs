@@ -16,9 +16,9 @@ fn start(unit_state: State<'_, UnitState>, on_event: Channel<UnitMessage>) -> Re
 }
 
 #[tauri::command]
-fn do_message(unit_state: State<'_, UnitState>) -> Result<(), Error> {
+fn send_command(unit_state: State<'_, UnitState>, msg: Value) -> Result<(), Error> {
     let mut unit = unit_state.0.lock().unwrap();
-    unit.send_levels()?;
+    unit.send_command(msg)?;
     Ok(())
 }
 
@@ -27,7 +27,7 @@ pub fn run() {
     tauri::Builder::default()
         .manage(UnitState(Mutex::new(JamUnit::new())))
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![start, do_message])
+        .invoke_handler(tauri::generate_handler![start, send_command])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

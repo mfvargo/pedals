@@ -19,12 +19,12 @@ type UnitMessage =
 
 function App() {
   const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+  const [_name, setName] = useState("");
 
   async function pedal_types() {
     const token = await invoke("start", { onEvent });
     setGreetMsg("jam unit token: " + JSON.stringify(token, null, 2));
-    await invoke("do_message", { });
+    await invoke("send_command", { do: "it" });
   }
 
   const onEvent = new Channel<UnitMessage>();
