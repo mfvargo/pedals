@@ -1,14 +1,35 @@
 import { useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
+import { invoke, Channel } from "@tauri-apps/api/core";
 import "./App.css";
+
+type UnitMessage = 
+  | {
+      event: "level";
+      data: {
+        masterVol: number;
+      };
+    }
+  | {
+      event: "boards";
+      data: {
+        name: string;
+        count: number;
+      };
+  };
 
 function App() {
   const [greetMsg, setGreetMsg] = useState("");
   const [name, setName] = useState("");
 
   async function pedal_types() {
-    await invoke("start", {});
-    setGreetMsg("Got pedal types");
+    const token = await invoke("start", { onEvent });
+    setGreetMsg("jam unit token: " + JSON.stringify(token, null, 2));
+    await invoke("do_message", { });
+  }
+
+  const onEvent = new Channel<UnitMessage>();
+  onEvent.onmessage = (message) => {
+    console.log(message);
   }
 
   return (
