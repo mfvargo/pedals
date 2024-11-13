@@ -16,14 +16,12 @@ import { WebsockStream } from "../components/chatControl/WebSockStream";
 const JamUnitControl = () => {
   const { jamUnitHandler } = useContext(HandlerContext);
   const [token, setToken] = useState<string>("");
-  const [socketUp, setSocketUp] = useState<boolean>(false);
   const [roomLeft, setRoomLeft] = useState<Level>({ level: -60.0, peak: -60.0 });
   const [roomRight, setRoomRight] = useState<Level>({ level: -60.0, peak: -60.0 });
   const [leftMute, setLeftMute] = useState<boolean>(false);
   const [rightMute, setRightMute] = useState<boolean>(false);
 
   useEffect(() => {
-    loadToken();
     jamUnitHandler.subscribe("unit", "jamUnitControl", distributeInfo);
     jamUnitHandler.subscribe("levels", "jamUnitControl", updateLevels);
     return () => {
@@ -32,18 +30,8 @@ const JamUnitControl = () => {
     };
   }, []);
 
-  function loadToken() {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has("token")) {
-      const token = urlParams.get("token");
-      if (token) {
-        setToken(token);
-      }
-    }
-  }
-
   async function distributeInfo(unit: UnitModel) {
-    setSocketUp(unit.socketUp);
+    setToken(unit.token);
   }
 
   async function updateLevels(unit: UnitModel) {
@@ -98,9 +86,9 @@ const JamUnitControl = () => {
   // {token && <UnitChat token={token} />}
   return (
     <div className="JamUnitControl">
-      {socketUp && token ? loaded : loading}
-      {token && <WebsockStream />}
-      {token && <UnitChat token={token} />}
+      {loaded}
+      <WebsockStream />
+      <UnitChat/>
     </div>
   );
 };

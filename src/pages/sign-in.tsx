@@ -9,17 +9,16 @@ export default function SignIn() {
   const { successHandler, sessionHandler } = useContext(HandlerContext);
   const { loading, execApi } = useApi();
 
-  const onSubmit = (data: any) => {
-    execApi(data, "/api/1/session", "post", (response: any) => {
-      if (response.user) {
-        successHandler.set({
-          message: "Session created",
-        });
-        window.localStorage.setItem("session:csrfToken", response.csrfToken);
-        sessionHandler.set(response.user);
-        Router.push("/jamUnits");
-      }
-    });
+  async function onSubmit(data: any) {
+    const response = await execApi(data, "/api/1/session", "post");
+    if (response.user) {
+      successHandler.set({
+        message: "Session created",
+      });
+      window.localStorage.setItem("session:csrfToken", response.csrfToken);
+      sessionHandler.set(response.user);
+      Router.push("/jamUnitControl");
+    }
   };
 
   const linkInfo = {

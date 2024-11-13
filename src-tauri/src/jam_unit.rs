@@ -12,14 +12,14 @@ use serde::Serialize;
 use serde_json::{json, Value};
 use tauri::{ipc::Channel, Error};
 
-#[derive(Clone, Serialize)]
-#[serde(rename_all = "camelCase", tag = "event", content = "data")]
-pub enum UnitMessage {
-    #[serde(rename_all = "camelCase")]
-    Level { data: Value },
-    #[serde(rename_all = "camelCase")]
-    Boards { data: Value },
-}
+// #[derive(Clone, Serialize)]
+// #[serde(rename_all = "camelCase", tag = "event", content = "data")]
+// pub enum UnitMessage {
+//     #[serde(rename_all = "camelCase")]
+//     Level { data: Value },
+//     #[serde(rename_all = "camelCase")]
+//     Boards { data: Value },
+// }
 
 pub struct JamUnit {
     board: PedalBoard,
@@ -39,7 +39,7 @@ impl JamUnit {
             pedal_tx: None,
         }
     }
-    pub fn start(&mut self, ev: Channel<UnitMessage>) -> Result<Value, Error> {
+    pub fn start(&mut self, ev: Channel<Value>) -> Result<Value, Error> {
         println!("start me up!");
 
         if self.pinging {
@@ -119,10 +119,11 @@ impl JamUnit {
     // Use this to send messages to the jamEnging
     pub fn send_command(&mut self, cmd: Value) -> Result<(), Error> {
         // Convert message into a ParamMessage
+        println!("cmd: {}", cmd);
         match ParamMessage::from_json(&cmd) {
             Ok(p) => {
                 if let Some(tx) = &self.cmd_tx {
-                    tx.send(p);
+                    let _r = tx.send(p);
                 }
             }
             Err(e) => {
@@ -163,7 +164,7 @@ impl JamUnit {
 
     // This message needs to get formatted and stuff
     fn status_msg_forwarder(
-        ev: Channel<UnitMessage>,
+        ev: Channel<Value>,
         msg: mpsc::Receiver<Value>,
     ) -> Result<(), Error> {
         // My job is to receive status messages from the jamEngine and convert them into events
@@ -173,7 +174,7 @@ impl JamUnit {
                 Ok(m) => {
                     // Got a status message
                     println!("msg: {:?}", m);
-                    ev.send(UnitMessage::Level { data: m })?;
+                    ev.send(m)?;
                 }
                 Err(e) => {
                     looping = false;

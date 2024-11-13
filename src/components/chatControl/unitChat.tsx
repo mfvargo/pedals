@@ -8,17 +8,24 @@ import { useContext, useEffect, useState } from "react";
 import { useApi } from "../../hooks/useApi";
 import { HandlerContext } from "../../contexts/HandlerContext";
 
-interface Props {
-  token: string;
-}
+import { invoke, Channel } from "@tauri-apps/api/core";
 
-export const UnitChat = ({ token }: Props) => {
-  const { jamUnitHandler, chatRoomHandler } = useContext(HandlerContext);
+export const UnitChat = () => {
+  const [token, setToken] = useState<string>("");
+  const { jamUnitHandler } = useContext(HandlerContext);
   const { execApi } = useApi();
   const [connected, setConnected] = useState<boolean>(false);
   const [boxIsTalking, setBoxIsTalking] = useState<boolean>(false);
   const [playerCount, setPlayerCount] = useState<Number>(0);
+  
+  const onEvent = new Channel<string>();
+  onEvent.onmessage = (message) => {
+    processJamUnitEvent(message);
+  }
 
+  async function start_me_up() {
+    setToken(await invoke("start", { onEvent }));
+  }
   const handleVisibilityChange = () => {
     if (!document.hidden) {
       jamUnitHandler.setUpdateInterval(150);
@@ -26,10 +33,9 @@ export const UnitChat = ({ token }: Props) => {
   };
 
   useEffect(() => {
+    start_me_up();
     jamUnitHandler.setApiFunction(sendMessage, loadUnit);
-    chatRoomHandler.subscribe(token, "unitChat", processJamUnitEvent);
     return () => {
-      chatRoomHandler.unsubscribe(token, "unitChat");
       jamUnitHandler.setApiFunction(console.log, null);
     };
   }, []);
@@ -39,7 +45,7 @@ export const UnitChat = ({ token }: Props) => {
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     const newTimer = setInterval(() => {
-      jamUnitHandler.setUpdateInterval(150);
+      // jamUnitHandler.setUpdateInterval(150);
       jamUnitHandler.setConnectionKeepAlive();
       setBoxIsTalking(new Date().getTime() - jamUnitHandler.lastHeardFrom.getTime() < 5000);
     }, 3000);
@@ -61,8 +67,10 @@ export const UnitChat = ({ token }: Props) => {
     loadUnit();
   }, [connected, playerCount, boxIsTalking]);
 
-  function sendMessage(msg: any) {
-    chatRoomHandler.sendFunc(token, msg);
+  async function sendMessage(msg: any) {
+    console.log(msg);
+    await invoke("send_command", { msg: msg });
+    // chatRoomHandler.sendFunc(token, msg);
   }
 
   async function loadUnit() {
@@ -86,10 +94,8 @@ export const UnitChat = ({ token }: Props) => {
   }
 
   // This function gets called with events from the jamUnit.
-  function processJamUnitEvent(message: string) {
-    // console.log(message);
+  function processJamUnitEvent(contents: any) {
     try {
-      const contents = JSON.parse(message);
       if (contents.speaker !== "UnitChatRobot") {
         // We are only interested in messages from the unit
         return;
