@@ -1,0 +1,110 @@
+.happenings-info {
+  box-shadow: 0 4px 12px $color-grey-dark-1;
+  border-radius: 8px;
+  padding: 35px;
+  margin-bottom: 20px;
+
+  &__top-buttons-container {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__button-icon-container {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    margin-right: 22px;
+  }
+
+  &__edit-icons-container {
+    display: flex;
+  }
+
+  &__title {
+    font-size: 24px;
+    text-align: center;
+    padding: 10px;
+  }
+
+  &__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: 20px;
+    padding: 15px;
+    margin: 10px;
+    border: 1px solid $color-grey-light-1;
+    border-radius: 10px;
+  }
+
+  &__icon {
+    margin-right: 10px;
+  }
+
+  &__bottom-buttons-container {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+  }
+
+  &__bottom-button {
+    margin: 10px;
+    font-size: 20px;
+  }
+
+  &__link {
+    text-decoration: none;
+    color: $color-white;
+
+    &:hover {
+      color: $color-white;
+    }
+  }
+}
+
+.happenings-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  &__buttons-container {
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+  }
+
+  &__button {
+    margin: 0 10px;
+  }
+}
+
+.showRSVP-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.showRSVP {
+  margin: 10px;
+  padding: 18px;
+  border-radius: 10px;
+  background-color: $color-light-blue;
+  display: flex;
+  text-align: center;
+  position: relative;
+
+  &__name {
+    font-weight: 700;
+  }
+
+  &__message {
+    font-size: 16px;
+  }
+
+  &__delete-button {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+}

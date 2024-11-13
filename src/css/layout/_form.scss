@@ -1,0 +1,37 @@
+.form-content-container {
+  display: flex;
+  justify-content: center;
+}
+
+.form-content {
+  box-shadow: 0 4px 12px $color-grey-dark-1;
+  border-radius: 8px;
+  padding: 55px;
+  width: 90%;
+
+  &__text {
+    font-weight: 700;
+  }
+
+  &__input {
+    margin-bottom: 25px;
+  }
+
+  &__time-container {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__time {
+    width: 32%;
+  }
+
+  &__buttons-container {
+    display: flex;
+    justify-content: center;
+  }
+
+  &__button {
+    margin: 0 15px;
+  }
+}

@@ -1,0 +1,17 @@
+@mixin transform-translate($x, $y) {
+  transform: translate($x, $y);
+  -webkit-transform: translate($x, $y);
+}
+
+@mixin transform-rotate($xDeg) {
+  transform: rotate($xDeg);
+  -webkit-transform: rotate($xDeg);
+}
+
+@mixin respond($breakpoint) {
+  @if $breakpoint == phone {
+    @media only screen and (max-width: 37.5em) {
+      @content;
+    }
+  }
+}

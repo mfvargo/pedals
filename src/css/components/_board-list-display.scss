@@ -1,0 +1,63 @@
+//******************************************************************************
+// Board List Display
+.board-list {
+  // &__toggle-btn {
+  //   display: flex;
+  //   align-items: center;
+  // }
+
+  &__content-container {
+    display: flex;
+    justify-content: center;
+  }
+
+  &__content {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  //******************************************************************************
+  // Board List Settings
+  &__settings {
+    display: flex;
+    align-items: flex-end;
+
+    @include respond(phone) {
+      flex-direction: column;
+    }
+  }
+
+  &__search {
+    border-top-right-radius: 0%;
+    border-bottom-right-radius: 0%;
+    border-radius: 12px 0% 0% 12px;
+  }
+
+  &__check-container {
+    display: flex;
+    width: 70%;
+    justify-content: space-between;
+    margin: 0 1rem;
+
+    @include respond(phone) {
+      width: 100%;
+    }
+  }
+
+  //******************************************************************************
+  // Board List Table
+  &__table {
+    width: 100%;
+  }
+
+  &__board-name {
+    display: flex;
+    align-items: center;
+  }
+
+  &__board-name-icon {
+    margin-right: 0.4rem;
+    font-size: 1.3rem;
+  }
+}

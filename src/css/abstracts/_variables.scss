@@ -1,0 +1,43 @@
+// COLORS
+// $color-primary:
+// $color-primary-light:
+// $color-primary-dark:
+
+// $color-secondary-light:
+// $color-secondary-dark:
+
+$color-grey-light-1: #f7f7f7;
+$color-grey-light-2: #b1b1b1;
+
+$color-grey-dark-1: #777;
+$color-grey-dark-2: #999;
+
+$color-white: #fff;
+$color-black: #000;
+
+$color-off-black: #161616;
+
+$color-aqua: #059dc0;
+$color-blue: #007bff;
+$color-light-blue: lightblue;
+$color-green: #669900;
+$color-red: red;
+
+// GRADIENT COLORS
+$s: #171717;
+$s1: lighten($s, 13%);
+$s2: lighten($s, 2.5%);
+$s3: darken($s, 1%);
+$s4: darken($s, 10%);
+
+// FONT
+// $default-font-size: 1.6rem;
+// $font-primary: "Nunito", sans-serif;
+
+// UNIT
+$control-width: 30px;
+$control-height: 200px;
+
+// PEDALBOARD
+$button-size: 75px;
+$footswitch-size: $button-size + 20px;

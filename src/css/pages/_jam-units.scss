@@ -1,0 +1,25 @@
+.box-unit-card {
+  box-shadow: 0 4px 12px $color-grey-dark-1;
+  border-radius: 10px;
+  padding: 30px;
+  margin: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 20px;
+
+  &__info {
+    font-weight: 700;
+  }
+
+  &__button {
+    height: 30px;
+  }
+
+  &__name-input {
+    margin-bottom: 10px;
+  }
+
+  &__save-button {
+    width: 100px;
+  }
+}

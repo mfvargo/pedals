@@ -1,0 +1,304 @@
+.volume-slider {
+  margin: 0px;
+  margin-left: 15px;
+  display: inline-flex;
+  min-height: $control-height;
+  min-width: $control-width;
+  position: relative;
+  .slider {
+    position: absolute;
+    top: -10px;
+    left: 0px;
+    .rangeslider-vertical {
+      margin: 0px auto;
+      height: 150px;
+      max-width: 10px;
+      background-color: transparent;
+    }
+    .rangeslider__fill {
+      background-color: #3b3a3a;
+    }
+  }
+  .level {
+    position: absolute;
+    top: 150px;
+    left: 0px;
+  }
+  .caption {
+    position: absolute;
+    top: 170px;
+    left: 0px;
+  }
+  .mutebutton {
+    position: absolute;
+    top: 170px;
+    left: 0px;
+  }
+}
+.level-meter {
+  margin: 10px;
+  display: inline-flex;
+  position: relative;
+  min-height: $control-height;
+  min-width: $control-width - 10px;
+  .meter {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+  }
+  .level {
+    position: absolute;
+    top: 160px;
+    left: 0px;
+    display: none;
+  }
+  .peak {
+    position: absolute;
+    top: 160px;
+    left: 0px;
+    // display: none;
+  }
+  .caption {
+    position: absolute;
+    top: 180px;
+    left: 0px;
+  }
+}
+
+.live-unit {
+  width: 100%;
+}
+
+.roomSelect {
+  h3 {
+    font-size: 24px;
+    margin-top: 20px;
+  }
+}
+
+.connectStatus {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.InputControl {
+  border: solid;
+  padding: 10px;
+  width: 40%;
+  border-radius: 10px;
+}
+
+.PlayerControl {
+  border: solid;
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-right: 10px;
+  padding-left: 7px;
+  // padding-right: 10px;
+  float: left;
+  .title {
+    font-weight: bold;
+    max-width: 150px;
+    margin: 10px;
+  }
+  .titleWide {
+    font-weight: bold;
+    margin: 10px;
+    width: 162px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+  }
+}
+
+.Metronome {
+  border-width: 3px;
+  border-style: solid;
+  border-radius: 10px;
+  width: 235px;
+  padding: 10px;
+  .title {
+    width: 155px;
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 18px;
+  }
+  .beat {
+    background-color: darkgrey;
+    padding: 10px;
+    display: inline-table;
+    height: 20px;
+    width: 20px;
+    margin-right: 10px;
+    border-radius: 5px;
+    vertical-align: top;
+  }
+  .downBeat {
+    background-color: red;
+  }
+  .onBeat {
+    background-color: blue;
+  }
+  .volume-slider {
+    min-height: 100px;
+    .slider {
+      .rangeslider-vertical {
+        height: 100px;
+      }
+    }
+    .level {
+      position: absolute;
+      top: 90px;
+      left: -5px;
+    }
+  }
+}
+.DeviceControl {
+  margin-top: 20px;
+  button {
+    border-radius: 5px;
+  }
+
+  .unitName {
+    text-align: center;
+    font-weight: bold;
+    font-size: 30px;
+  }
+  .actions {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    .actionButton {
+      margin: 5px;
+      display: inline;
+      button {
+        // padding: 5px;
+        font-size: 16px;
+        // border-radius: 5px;
+        // border: none;
+      }
+    }
+  }
+  .caption {
+    font-size: 12px;
+    button {
+      padding: 2px;
+      font-size: 10px;
+      border: none;
+    }
+  }
+}
+.pedalMeters {
+  float: left;
+}
+
+.channelEffects {
+  .pedalControl {
+    // min-height: 200px;
+    // margin-right: 10px;
+    // width: 50%;
+    // padding-right: 10px;
+    // float: left;
+    .title {
+      text-align: left;
+      font-weight: bold;
+    }
+  }
+  .ActionButtons {
+    display: inline-flex;
+    margin: 10px;
+  }
+  .selectLabel {
+    display: inline-flex;
+    margin-right: 10px;
+  }
+  .selectDropDown {
+    width: 60%;
+    display: inline-block;
+  }
+}
+
+// .tuner {
+//   position: relative;
+//   margin: 10px;
+//   font-size: 32px;
+//   border-width: 2px;
+//   border-style: solid;
+//   border-radius: 10px;
+//   width: 170px;
+//   &.minimized {
+//     width: 100px;
+//     height: 30px;
+//     font-size: 14px;
+//     .title {
+//       width: 110px;
+//       color: $color-black;
+//     }
+//     .drift {
+//       display: none;
+//     }
+//     .note {
+//       display: none;
+//     }
+//   }
+//   .showHide {
+//     font-size: 10px;
+//     width: 20px;
+//     text-align: center;
+//     border-style: none;
+//     border-radius: 3px;
+//     background-color: $color-grey-light-1;
+//     position: absolute;
+//     left: 5px;
+//     top: 5px;
+//   }
+//   .title {
+//     width: 170px;
+//     color: blue;
+//     text-align: center;
+//   }
+//   .drift {
+//     border-radius: 10px;
+//     padding: 4px;
+//   }
+//   .note {
+//     display: inline-block;
+//     width: 50px;
+//     margin-left: 10px;
+//     margin-right: 10px;
+//     text-align: center;
+//   }
+//   .inTune {
+//     background-color: lightgreen;
+//   }
+// }
+
+.PublicBoards {
+  margin-top: 10px;
+  .searchBox {
+    margin-top: 10px;
+    margin-right: 10px;
+    label {
+      margin-right: 10px;
+    }
+  }
+}
+
+// This is just here to make it stand out for Destiny.
+// i'm sure this will get deleted when she does the code.
+.PlayerList {
+  color: blue;
+}
+
+@media screen and (max-width: 992px) {
+  .channelEffects {
+    .pedalControl {
+      // margin-right: 10px;
+      width: 100%;
+      padding-right: 0px;
+    }
+  }
+  .InputControl {
+    width: 100%;
+  }
+}

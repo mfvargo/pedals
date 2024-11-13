@@ -1,0 +1,26 @@
+.happenings-list-info {
+  box-shadow: 0 4px 12px $color-grey-dark-1;
+  border-radius: 8px;
+  padding: 25px 35px;
+  margin-bottom: 15px;
+  font-weight: 700;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+
+  &__expand {
+    padding: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  &__icon {
+    font-size: 28px;
+    margin-right: 10px;
+  }
+}
+
+.create-new-happening-button {
+  font-size: 22px;
+  padding: 20px 30px;
+}

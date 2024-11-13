@@ -1,0 +1,36 @@
+.software-status {
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  padding: 0.2rem;
+  color: green;
+  border: 3px solid green;
+  width: 14rem;
+  margin-left: 40%;
+
+  @include respond(phone) {
+    margin-left: 0%;
+  }
+
+  &--needs-update {
+    color: red;
+    border: 3px solid red;
+    width: 16rem;
+  }
+
+  &__update-btn {
+    color: inherit;
+
+    &--updating {
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  &__status-text {
+    margin-left: 0.15rem;
+    margin-right: 0.3rem;
+    padding-left: 0.15rem;
+    border-left: 1px solid;
+    border-color: inherit;
+  }
+}

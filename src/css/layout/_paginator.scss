@@ -1,0 +1,21 @@
+.paginator {
+  display: flex;
+  justify-content: center;
+
+  &--hidden {
+    visibility: hidden;
+  }
+
+  button {
+    padding: 0.3rem 0.6rem;
+    font-size: 1rem;
+  }
+
+  &__button-hidden {
+    visibility: hidden;
+  }
+
+  &__ellipsis {
+    pointer-events: none;
+  }
+}

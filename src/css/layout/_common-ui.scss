@@ -1,0 +1,75 @@
+//******************************************************************************
+// Default styles for all buttons
+.default-button {
+  padding: 0.6rem 1.6rem;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+//******************************************************************************
+// Styles for all buttons that are icons
+// add in as first class if element has multiple classes
+.icon-button {
+  background-color: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    opacity: 0.5;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:active {
+    opacity: 0.8;
+  }
+
+  &:disabled {
+    opacity: 0.3;
+  }
+
+  // This classname will need to be added to actual icon to avoid issues with svg
+  & .icon {
+    pointer-events: none;
+  }
+
+  // // Styles for the inverse of the icon-button (for dark backgrounds)
+  &--inverse {
+    color: $color-white;
+  }
+}
+
+//******************************************************************************
+// Search bar
+.search-bar {
+  border-top-right-radius: 0%;
+  border-bottom-right-radius: 0%;
+  border-radius: 12px 0% 0% 12px;
+}
+
+//******************************************************************************
+// Modal
+.modal-content {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 80vw;
+  display: flex;
+  align-items: center;
+  z-index: 100;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 50;
+}

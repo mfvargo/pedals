@@ -1,0 +1,113 @@
+.tuner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 11rem;
+  width: 18rem;
+  background-color: #212121;
+  box-shadow: 0px 4px 15px -2px #000;
+  border-radius: 25px;
+  position: relative;
+  margin: 0.2rem 0;
+
+  &--hide {
+    display: none;
+  }
+
+  &__lights-container {
+    display: flex;
+    justify-content: space-between;
+    width: 25%;
+    margin: 0.3rem 0;
+    align-items: center;
+  }
+
+  &__single-light-container {
+    display: flex;
+    align-items: center;
+  }
+
+  &__symbol {
+    color: white;
+  }
+
+  &__light {
+    height: 12px;
+    width: 12px;
+    border-radius: 20px;
+
+    &--red {
+      background-color: darken(red, 30%);
+    }
+
+    &--red-active {
+      background-color: red;
+      box-shadow: 0px 0px 5px red;
+    }
+
+    &--green {
+      background-color: darken(green, 10%);
+    }
+
+    &--green-active {
+      background-color: green;
+      box-shadow: 0px 0px 5px green;
+    }
+  }
+
+  &__meter-container {
+    background-color: #d7c39c;
+    border-radius: 2px;
+    height: 73%;
+    width: 85%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 10px solid #151515;
+    border-bottom: 10px solid #2e2e2e;
+    border-left: 10px solid #1b1b1b;
+    border-right: 10px solid #3c3c3c;
+  }
+
+  &__tuner-text {
+    color: #d7c39c;
+    font-size: 10px;
+    background-color: black;
+    height: 1rem;
+    width: 4.5rem;
+    border-radius: 3px;
+    text-align: center;
+    align-self: flex-start;
+    margin: 0.2rem;
+  }
+
+  &__note-feedback {
+    color: $color-black;
+
+    &--in-tune {
+      font-weight: 700;
+    }
+  }
+
+  &__meter-circle {
+    background-color: transparent;
+    border-top-left-radius: 120px;
+    border-top-right-radius: 120px;
+    border: 1px solid black;
+    border-bottom: transparent;
+    height: 65%;
+    width: 60%;
+    position: relative;
+  }
+
+  &__meter-pointer {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    height: 64px;
+    width: 1px;
+    border-right: 1px solid black;
+    transform-origin: bottom;
+  }
+}

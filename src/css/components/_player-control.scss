@@ -1,0 +1,31 @@
+.player-control-card {
+  width: 18rem;
+  height: 18rem;
+
+  &__fast {
+    font-size: 19px;
+  }
+
+  &__medium {
+    font-size: 20px;
+  }
+
+  &__slow {
+    font-size: 23px;
+  }
+
+  &__middle-icons {
+    cursor: pointer;
+  }
+
+  &__close-button {
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+  }
+
+  &__volume-slider {
+    min-height: 60px;
+    min-width: 200px;
+  }
+}

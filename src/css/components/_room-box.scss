@@ -1,0 +1,31 @@
+.RoomBox {
+  // float: left;
+  // width: 30%;
+  // min-height: 200px;
+  margin: 10px;
+  // border-color: rgb(189, 186, 186);
+  // border-style: ridge;
+  .title {
+    margin: 5px;
+    button {
+      // float: right;
+      margin-right: 10px;
+    }
+  }
+  .lastSeen {
+    margin: 5px;
+  }
+  .players {
+    margin: 5px;
+  }
+  .joinButton {
+    margin: 5px;
+    text-align: center;
+  }
+}
+
+.UnitBox {
+  .unitStatus {
+    margin: 10px;
+  }
+}

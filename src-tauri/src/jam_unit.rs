@@ -2,11 +2,11 @@ use std::sync::mpsc;
 use std::thread::{self, sleep};
 use std::time::Duration;
 
+use rtjam_rust::common::jam_nation_api::JamNationApi;
 use rtjam_rust::pedals::pedal_board::PedalBoard;
 use rtjam_rust::sound::jack_thread;
-use rtjam_rust::utils::get_my_mac_address;
-use rtjam_rust::common::jam_nation_api::JamNationApi;
 use rtjam_rust::sound::param_message::ParamMessage;
+use rtjam_rust::utils::get_my_mac_address;
 use rtjam_rust::JamEngine;
 use serde::Serialize;
 use serde_json::{json, Value};
@@ -14,15 +14,11 @@ use tauri::{ipc::Channel, Error};
 
 #[derive(Clone, Serialize)]
 #[serde(rename_all = "camelCase", tag = "event", content = "data")]
-pub enum UnitMessage<> {
+pub enum UnitMessage {
     #[serde(rename_all = "camelCase")]
-    Level {
-      data: Value,
-    },
+    Level { data: Value },
     #[serde(rename_all = "camelCase")]
-    Boards {
-      data: Value,
-    },
+    Boards { data: Value },
 }
 
 pub struct JamUnit {
@@ -58,7 +54,7 @@ impl JamUnit {
         let api_url = String::from("http://rtjam-nation.com/api/1/");
         let mac_address = get_my_mac_address().unwrap();
         let git_hash = "what is my hash";
-    
+
         // Create an api endpoint and register this jamUnit
         let mut api = JamNationApi::new(api_url.as_str(), mac_address.as_str(), git_hash);
         let _register = api.jam_unit_register();
@@ -79,26 +75,30 @@ impl JamUnit {
         ) = mpsc::channel();
 
         // This is the channel we will use to send commands to the jack engine
-        let (command_tx, command_rx): (
-            mpsc::Sender<ParamMessage>, 
-            mpsc::Receiver<ParamMessage>
-        ) = mpsc::channel();
+        let (command_tx, command_rx): (mpsc::Sender<ParamMessage>, mpsc::Receiver<ParamMessage>) =
+            mpsc::channel();
         // Save the sender end in the jamUnit
         self.cmd_tx = Some(command_tx);
 
         // This is the channel we will send manufactured pedal boards to
-        let (pedal_tx, pedal_rx): (
-            mpsc::Sender<PedalBoard>, 
-            mpsc::Receiver<PedalBoard>
-        ) = mpsc::channel();
+        let (pedal_tx, pedal_rx): (mpsc::Sender<PedalBoard>, mpsc::Receiver<PedalBoard>) =
+            mpsc::channel();
         // Save the sender end in the jamUnit
         self.pedal_tx = Some(pedal_tx);
 
         let token_copy = self.token.clone();
 
-        match JamEngine::new(None, status_data_tx, command_rx, pedal_rx, &token_copy, git_hash, false) {
+        match JamEngine::new(
+            None,
+            status_data_tx,
+            command_rx,
+            pedal_rx,
+            &token_copy,
+            git_hash,
+            false,
+        ) {
             Ok(engine) => {
-                    // Now we have the engine, jack_thread
+                // Now we have the engine, jack_thread
                 let _jack_thread_handle = thread::spawn(move || {
                     let _res = jack_thread::run(engine);
                 });
@@ -113,9 +113,7 @@ impl JamUnit {
             let _res = Self::status_msg_forwarder(ev, status_data_rx);
         });
 
-
         Ok(json!(self.token))
-
     }
 
     // Use this to send messages to the jamEnging
@@ -130,7 +128,6 @@ impl JamUnit {
             Err(e) => {
                 dbg!(e);
             }
-
         }
         Ok(())
     }
@@ -165,7 +162,10 @@ impl JamUnit {
     }
 
     // This message needs to get formatted and stuff
-    fn status_msg_forwarder(ev: Channel<UnitMessage>, msg: mpsc::Receiver<Value>) -> Result<(), Error> {
+    fn status_msg_forwarder(
+        ev: Channel<UnitMessage>,
+        msg: mpsc::Receiver<Value>,
+    ) -> Result<(), Error> {
         // My job is to receive status messages from the jamEngine and convert them into events
         let mut looping = true;
         while looping {
@@ -183,6 +183,4 @@ impl JamUnit {
         }
         Ok(())
     }
-    
 }
-
