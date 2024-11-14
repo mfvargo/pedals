@@ -5,7 +5,7 @@ use std::time::Duration;
 use rtjam_rust::common::jam_nation_api::JamNationApi;
 use rtjam_rust::pedals::pedal_board::PedalBoard;
 use rtjam_rust::sound::{ jack_thread, alsa_thread };
-use rtjam_rust::sound::param_message::ParamMessage;
+use rtjam_rust::sound::param_message::{JamParam, ParamMessage};
 use rtjam_rust::utils::get_my_mac_address;
 use rtjam_rust::JamEngine;
 use serde_json::{json, Value};
@@ -127,9 +127,27 @@ impl JamUnit {
         // Convert message into a ParamMessage
         println!("cmd: {}", cmd);
         match ParamMessage::from_json(&cmd) {
-            Ok(p) => {
-                if let Some(tx) = &self.cmd_tx {
-                    let _r = tx.send(p);
+            Ok(msg) => {
+                match msg.param {
+                    JamParam::LoadBoard => {
+                        // construct a pedal board and send the constructed board to the engine
+                        let idx = msg.ivalue_1 as usize;
+                        if idx < 2 {
+                            // Build a pedalboard and send it to the jack thread
+                            let mut board = PedalBoard::new(idx);
+                            board.load_from_json(&msg.svalue);
+                            if let Some(pedal_tx) = &self.pedal_tx {
+                                let _res = pedal_tx.send(board);
+                            }
+                        }
+                    }
+                    _ => {
+                        // Default, send this command to the engine
+                        if let Some(tx) = &self.cmd_tx {
+                            let _r = tx.send(msg);
+                        }
+        
+                    }
                 }
             }
             Err(e) => {
