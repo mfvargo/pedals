@@ -42,51 +42,38 @@ const JamUnitControl = () => {
     setRightMute(unit.rightRoomMute);
   }
 
-  const loading = (
-    <div>
-      <p>Loading</p>
-    </div>
-  );
-
-  const loaded = (
-    <div className="JamUnitControl" key="JamUnitControl">
-      <div className="topLevel">
-        <div className="d-flex align-items-center mb-2">
-          <RoomMute channel={0} mute={leftMute} />
-          <LevelMeter signal={roomLeft} size={150} />
-        </div>
-        <div className="d-flex align-items-center mb-2">
-          <RoomMute channel={1} mute={rightMute} />
-          <LevelMeter signal={roomRight} size={150} />
-        </div>
-      </div>
-
-      {/* @ts-ignore */}
-      <Tabs fill defaultActiveKey="rooms" className="mb-3">
-        <Tab eventKey="rooms" title="Rooms">
-          <RoomSelect token={token} />
-        </Tab>
-
-        <Tab eventKey="mixer-control" title="Mixer Control">
-          <AllChannelMixer />
-        </Tab>
-
-        <Tab eventKey="pedalboards" title="Pedalboards">
-          <PedalBoardCtrlPanel />
-        </Tab>
-        <Tab eventKey="unitConfig" title="Settings">
-          <JamUnitConfig token={token} />
-        </Tab>
-      </Tabs>
-    </div>
-  );
-
-  // token is required before UnitChat
-  // socketUp is required for loading
-  // {token && <UnitChat token={token} />}
   return (
     <div className="JamUnitControl">
-      {loaded}
+    <div className="JamUnitControl" key="JamUnitControl">
+        <div className="topLevel">
+          <div className="d-flex align-items-center mb-2">
+            <RoomMute channel={0} mute={leftMute} />
+            <LevelMeter signal={roomLeft} size={150} />
+          </div>
+          <div className="d-flex align-items-center mb-2">
+            <RoomMute channel={1} mute={rightMute} />
+            <LevelMeter signal={roomRight} size={150} />
+          </div>
+        </div>
+
+        {/* @ts-ignore */}
+        <Tabs fill defaultActiveKey="rooms" className="mb-3">
+          <Tab eventKey="rooms" title="Rooms">
+            <RoomSelect token={token} />
+          </Tab>
+
+          <Tab eventKey="mixer-control" title="Mixer Control">
+            <AllChannelMixer />
+          </Tab>
+
+          <Tab eventKey="pedalboards" title="Pedalboards">
+            <PedalBoardCtrlPanel />
+          </Tab>
+          <Tab eventKey="unitConfig" title="Settings">
+            <JamUnitConfig token={token} />
+          </Tab>
+        </Tabs>
+      </div>
       <WebsockStream />
       <UnitChat/>
     </div>

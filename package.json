@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "clean": "rm -rf node_modules out .next",
     "tauri": "tauri"
   },
   "dependencies": {

@@ -11,21 +11,33 @@ import { HandlerContext } from "../../contexts/HandlerContext";
 import { invoke, Channel } from "@tauri-apps/api/core";
 
 export const UnitChat = () => {
-  const [token, setToken] = useState<string>("");
   const { jamUnitHandler } = useContext(HandlerContext);
   const { execApi } = useApi();
+
+  // Token from the unit
+  const [token, setToken] = useState<any>("");
+  // Are we connected to a room
   const [connected, setConnected] = useState<boolean>(false);
+  // Are we getting any info rom the box
   const [boxIsTalking, setBoxIsTalking] = useState<boolean>(false);
+  // Number of players in the room
   const [playerCount, setPlayerCount] = useState<Number>(0);
+  // event handler for messages from the unit
+  const [_ev, setEv] = useState<Channel<string>>();
   
-  const onEvent = new Channel<string>();
-  onEvent.onmessage = (message) => {
-    processJamUnitEvent(message);
-  }
 
   async function start_me_up() {
-    setToken(await invoke("start", { onEvent }));
+      console.log("starting up the engine");
+      const ev = new Channel<string>();
+      ev.onmessage = (message: any) => {
+        processJamUnitEvent(message);
+      }
+      setEv(ev);
+      const tok = await invoke("start", { onEvent: ev })
+      console.log("start gave me: " + token);
+      setToken(tok);
   }
+  
   const handleVisibilityChange = () => {
     if (!document.hidden) {
       jamUnitHandler.setUpdateInterval(150);
@@ -34,18 +46,21 @@ export const UnitChat = () => {
 
   useEffect(() => {
     start_me_up();
+  }, []);
+
+  useEffect(() => {
+    console.log("got a token: " + token);
     jamUnitHandler.setApiFunction(sendMessage, loadUnit);
     return () => {
       jamUnitHandler.setApiFunction(console.log, null);
     };
-  }, []);
+  }, [token]);
 
   // reset the update interval every minute so it does not go back to slow
   useEffect(() => {
     document.addEventListener("visibilitychange", handleVisibilityChange);
-
     const newTimer = setInterval(() => {
-      // jamUnitHandler.setUpdateInterval(150);
+      jamUnitHandler.setUpdateInterval(150);
       jamUnitHandler.setConnectionKeepAlive();
       setBoxIsTalking(new Date().getTime() - jamUnitHandler.lastHeardFrom.getTime() < 5000);
     }, 3000);
@@ -64,16 +79,20 @@ export const UnitChat = () => {
   }, [boxIsTalking]);
 
   useEffect(() => {
-    loadUnit();
+      jamUnitHandler.reloadUnitInfo();
   }, [connected, playerCount, boxIsTalking]);
 
   async function sendMessage(msg: any) {
-    console.log(msg);
+    // console.log(msg);
     await invoke("send_command", { msg: msg });
     // chatRoomHandler.sendFunc(token, msg);
   }
 
   async function loadUnit() {
+    console.log("loadUnit: " + token);
+    if (!token) {
+      return;
+    }
     const { jamUnit } = await execApi({ token: token }, "/api/1/jamUnit", "get");
     jamUnitHandler.setJamUnitData(jamUnit);
     jamUnitHandler.setUnitName(jamUnit.name, jamUnit.token);

@@ -4,22 +4,14 @@ use std::time::Duration;
 
 use rtjam_rust::common::jam_nation_api::JamNationApi;
 use rtjam_rust::pedals::pedal_board::PedalBoard;
-use rtjam_rust::sound::jack_thread;
+use rtjam_rust::sound::{ jack_thread, alsa_thread };
 use rtjam_rust::sound::param_message::ParamMessage;
 use rtjam_rust::utils::get_my_mac_address;
 use rtjam_rust::JamEngine;
-use serde::Serialize;
 use serde_json::{json, Value};
 use tauri::{ipc::Channel, Error};
+use thread_priority::{ThreadBuilder, ThreadPriority};
 
-// #[derive(Clone, Serialize)]
-// #[serde(rename_all = "camelCase", tag = "event", content = "data")]
-// pub enum UnitMessage {
-//     #[serde(rename_all = "camelCase")]
-//     Level { data: Value },
-//     #[serde(rename_all = "camelCase")]
-//     Boards { data: Value },
-// }
 
 pub struct JamUnit {
     board: PedalBoard,
@@ -99,9 +91,23 @@ impl JamUnit {
         ) {
             Ok(engine) => {
                 // Now we have the engine, jack_thread
-                let _jack_thread_handle = thread::spawn(move || {
-                    let _res = jack_thread::run(engine);
-                });
+                // let _jack_thread_handle = thread::spawn(move || {
+                //     let _res = jack_thread::run(engine);
+                // });
+                let builder = ThreadBuilder::default()
+                    .name("Real-Time Thread".to_string())
+                    .priority(ThreadPriority::Max);
+        
+                let _alsa_handle = builder.spawn(move |_result| {
+                    match alsa_thread::run(engine, "plughw:CODEC", "plughw:CODEC") {
+                        Ok(()) => {
+                        println!("alsa ended with OK");
+                        }
+                        Err(e) => {
+                            println!("alsa exited with error {}", e);
+                        }
+                    }
+                })?;
             }
             Err(e) => {
                 dbg!(e);
@@ -173,7 +179,6 @@ impl JamUnit {
             match msg.recv() {
                 Ok(m) => {
                     // Got a status message
-                    println!("msg: {:?}", m);
                     ev.send(m)?;
                 }
                 Err(e) => {

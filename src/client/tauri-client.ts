@@ -1,8 +1,8 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import queryString from "query-string";
 
-// const baseUrl = "http://rtjam-nation.com";
-const baseUrl = "http://localhost:8080";
+const baseUrl = "http://rtjam-nation.com";
+// const baseUrl = "http://localhost:8080";
 
 export class Client {
     csrfToken() {
