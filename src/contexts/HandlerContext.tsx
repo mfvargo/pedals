@@ -5,6 +5,7 @@ import { SessionHandler } from "../utils/sessionHandler";
 import { JamUnitHandler } from "../utils/jamUnitHandler";
 import { RoomHandler } from "../utils/roomHandler";
 import { ChatRoomHandler } from "../utils/ChatRoomHandler";
+import { ConfigHandler } from "../utils/ConfigHandler";
 
 type HandlerContextObj = {
   errorHandler: ErrorHandler;
@@ -13,6 +14,7 @@ type HandlerContextObj = {
   jamUnitHandler: JamUnitHandler;
   roomHandler: RoomHandler;
   chatRoomHandler: ChatRoomHandler;
+  configHandler: ConfigHandler;
 };
 
 const HandlerContext = createContext<HandlerContextObj>({
@@ -22,6 +24,7 @@ const HandlerContext = createContext<HandlerContextObj>({
   jamUnitHandler: new JamUnitHandler(),
   roomHandler: new RoomHandler(),
   chatRoomHandler: new ChatRoomHandler(),
+  configHandler: new ConfigHandler(),
 });
 
 type HandlerContextProviderProps = {
@@ -35,6 +38,7 @@ const HandlerContextProvider: React.FC<HandlerContextProviderProps> = (props) =>
   const [jamUnitHandler] = useState(new JamUnitHandler());
   const [roomHandler] = useState(new RoomHandler());
   const [chatRoomHandler] = useState(new ChatRoomHandler());
+  const [configHandler] = useState(new ConfigHandler());
 
   const contextValue: HandlerContextObj = {
     errorHandler,
@@ -43,6 +47,7 @@ const HandlerContextProvider: React.FC<HandlerContextProviderProps> = (props) =>
     jamUnitHandler,
     roomHandler,
     chatRoomHandler,
+    configHandler,
   };
 
   return <HandlerContext.Provider value={contextValue}>{props.children}</HandlerContext.Provider>;

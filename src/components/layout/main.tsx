@@ -13,7 +13,7 @@ const MainLayout = ({ children }: any) => (
       <title>RTJam Nation</title>
       <meta name="rtjam-nation-app" content="RTJam Nation" />
       <meta name="viewport" content="width=device-width, initial-scale=0.8"></meta>
-      <script src="/public/javascript/ActionheroWebsocketClient.min.js" />
+      <script src="/javascript/ActionheroWebsocketClient.js" />
     </Head>
 
     <div id="backdrop-root"></div>

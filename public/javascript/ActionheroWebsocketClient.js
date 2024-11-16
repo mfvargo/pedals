@@ -2583,6 +2583,7 @@ try {
  * @api public
  */
 function Primus(url, options) {
+  console.log(url);
   if (!(this instanceof Primus)) return new Primus(url, options);
 
   Primus.Stream.call(this);
@@ -3800,6 +3801,7 @@ module.exports = Primus;
 ;;;
 (function(exports){ 
 var ActionheroWebsocketClient = function (options, client) {
+  console.log("Websock Options: " + JSON.stringify(options));
   var self = this
 
   self.callbacks = {}
@@ -3831,7 +3833,7 @@ ActionheroWebsocketClient.prototype.defaults = function () {
   return {
   apiPath: '/api',
   cookieKey: 'sessionID',
-  url: window.location.origin
+  url: 'http://localhost:8080'
 }
 }
 

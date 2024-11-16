@@ -1,5 +1,5 @@
-/// This invisible u/x element will subscribe/unsubscribe with the chatRoomHandler and
-/// Is responsible for collecting data associated with the jamUnit from websock messages
+/// This invisible u/x element will start up the jamUnit
+/// Is responsible for collecting data associated with the jamUnit from channel messages
 /// and from the cloud (unit data, player data, pedalBoards, etc.)
 ///
 /// There should only ever be one of these on a page...
@@ -11,21 +11,18 @@ import { HandlerContext } from "../../contexts/HandlerContext";
 import { invoke, Channel } from "@tauri-apps/api/core";
 
 export const UnitChat = () => {
-  const { jamUnitHandler } = useContext(HandlerContext);
+  const { jamUnitHandler, configHandler } = useContext(HandlerContext);
   const { execApi } = useApi();
 
   // Token from the unit
-  const [token, setToken] = useState<any>("");
+  const [token, setToken] = useState<string | undefined>();
   // Are we connected to a room
   const [connected, setConnected] = useState<boolean>(false);
-  // Are we getting any info rom the box
-  const [boxIsTalking, setBoxIsTalking] = useState<boolean>(false);
   // Number of players in the room
   const [playerCount, setPlayerCount] = useState<Number>(0);
   // event handler for messages from the unit
   const [_ev, setEv] = useState<Channel<string>>();
   
-
   async function start_me_up() {
       console.log("starting up the engine");
       const ev = new Channel<string>();
@@ -33,54 +30,50 @@ export const UnitChat = () => {
         processJamUnitEvent(message);
       }
       setEv(ev);
-      const tok = await invoke("start", { onEvent: ev })
-      console.log("start gave me: " + token);
+      const tok: string = await invoke("start", 
+        {
+          // Args to start functiion in lib.rs
+          onEvent: ev, 
+          useAlsa: configHandler.use_alsa,
+          apiUrl: configHandler.api_url,
+          inDev: configHandler.in_device,
+          outDev: configHandler.out_device,
+        }
+      );
+      console.log("start gave me: " + tok);
       setToken(tok);
   }
   
-  const handleVisibilityChange = () => {
-    if (!document.hidden) {
-      jamUnitHandler.setUpdateInterval(150);
-    }
-  };
-
   useEffect(() => {
+    // on page load, start the unit
     start_me_up();
   }, []);
 
   useEffect(() => {
     console.log("got a token: " + token);
     jamUnitHandler.setApiFunction(sendMessage, loadUnit);
+    unitInit();
+    const newTimer = setInterval(() => {
+      jamUnitHandler.setUpdateInterval(150);
+      jamUnitHandler.setConnectionKeepAlive();
+    }, 3000);
     return () => {
+      clearInterval(newTimer);
       jamUnitHandler.setApiFunction(console.log, null);
     };
   }, [token]);
 
-  // reset the update interval every minute so it does not go back to slow
-  useEffect(() => {
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    const newTimer = setInterval(() => {
-      jamUnitHandler.setUpdateInterval(150);
-      jamUnitHandler.setConnectionKeepAlive();
-      setBoxIsTalking(new Date().getTime() - jamUnitHandler.lastHeardFrom.getTime() < 5000);
-    }, 3000);
-    return () => {
-      clearInterval(newTimer);
-    };
-  }, []);
+  async function unitInit() {
+    await jamUnitHandler.getPedalTypes();
+    await jamUnitHandler.refreshPedalConfig();
+    await jamUnitHandler.getAudioHardwareInfo();
+    await jamUnitHandler.setSocketUp(true);
+  }
 
-  useEffect(() => {
-    if (boxIsTalking) {
-      jamUnitHandler.getPedalTypes();
-      jamUnitHandler.refreshPedalConfig();
-      jamUnitHandler.getAudioHardwareInfo();
-    }
-    jamUnitHandler.setSocketUp(boxIsTalking);
-  }, [boxIsTalking]);
 
   useEffect(() => {
       jamUnitHandler.reloadUnitInfo();
-  }, [connected, playerCount, boxIsTalking]);
+  }, [connected, playerCount]);
 
   async function sendMessage(msg: any) {
     // console.log(msg);
@@ -119,9 +112,6 @@ export const UnitChat = () => {
         // We are only interested in messages from the unit
         return;
       }
-      // Mark we are talking so we fetch the pedaltypes
-      setBoxIsTalking(true);
-
       // mark the time we heard from the unit
       jamUnitHandler.lastHeardFrom = new Date();
 

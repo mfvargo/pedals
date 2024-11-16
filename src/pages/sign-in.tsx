@@ -6,12 +6,14 @@ import { HandlerContext } from "../contexts/HandlerContext";
 import { LoginCard } from "../components/LoginCard/LoginCard";
 
 export default function SignIn() {
-  const { successHandler, sessionHandler } = useContext(HandlerContext);
+  const { successHandler, sessionHandler, configHandler } = useContext(HandlerContext);
   const { loading, execApi } = useApi();
 
   async function onSubmit(data: any) {
     const response = await execApi(data, "/api/1/session", "post");
     if (response.user) {
+      configHandler.user = response.user;
+      console.log(configHandler);
       successHandler.set({
         message: "Session created",
       });

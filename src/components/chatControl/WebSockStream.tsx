@@ -11,11 +11,12 @@ import { HandlerContext } from "../../contexts/HandlerContext";
 
 export const WebsockStream = () => {
   // @ts-ignore
-  if (!globalThis.ActionheroWebsocketClient) return null;
-  const { chatRoomHandler } = useContext(HandlerContext);
+  if (!globalThis.ActionheroWebsocketClient) return <div className="WebsockEventFetcher" />;
+  const { chatRoomHandler, configHandler } = useContext(HandlerContext);
+  console.log(configHandler);
   const [roomState, setRoomState] = useState<string>("connecting");
   // @ts-ignore
-  const [client] = useState<any>(new globalThis.ActionheroWebsocketClient());
+  const [client] = useState<any>(new globalThis.ActionheroWebsocketClient({url: configHandler.ws_url}));
 
   useEffect(() => {
     connectToSite();

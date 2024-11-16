@@ -12,11 +12,21 @@
     {
       "identifier": "http:default",
       "allow": [
-        { "url": "https://rtjam-nation.com/" },
-        { "url": "http://localhost:8080/" },
-        { "url": "http://rtjam-nation.com/" }
+        {
+          "url": "https://rtjam-nation.com/"
+        },
+        {
+          "url": "http://localhost:8080/"
+        },
+        {
+          "url": "http://rtjam-nation.com/"
+        }
       ],
-      "deny": [{ "url": "https://private.tauri.app" }]
+      "deny": [
+        {
+          "url": "https://private.tauri.app"
+        }
+      ]
     }
   ]
 }

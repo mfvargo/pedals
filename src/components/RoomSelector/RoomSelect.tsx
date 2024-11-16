@@ -30,7 +30,7 @@ export const RoomSelect = ({ token }: Props) => {
   const { pageInfo, setPageInfo, recordCount, setRecordCount, pageSize } = usePaginator(8);
   const [activeTab, setActiveTab] = useState<string>("room");
   const [audioOn, setAudioOn] = useState<boolean>(false);
-  const [showRooms, setShowRooms] = useState<boolean>(false);
+  const [showRooms, setShowRooms] = useState<boolean>(true);
   const [playerCount, setPlayerCount] = useState<Number>(0);
 
   useEffect(() => {

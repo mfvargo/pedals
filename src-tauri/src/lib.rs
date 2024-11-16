@@ -9,9 +9,16 @@ use jam_unit::JamUnit;
 struct UnitState(Mutex<JamUnit>);
 
 #[tauri::command]
-fn start(unit_state: State<'_, UnitState>, on_event: Channel<Value>) -> Result<Value, Error> {
+fn start(
+    unit_state: State<'_, UnitState>,
+    on_event: Channel<Value>,
+    use_alsa: bool,
+    api_url: String,
+    in_dev: String,
+    out_dev: String
+) -> Result<Value, Error> {
     let mut unit = unit_state.0.lock().unwrap();
-    unit.start(on_event)
+    unit.start(on_event, use_alsa, api_url, in_dev, out_dev)
 }
 
 #[tauri::command]

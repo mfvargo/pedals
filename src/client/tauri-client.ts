@@ -1,9 +1,6 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import queryString from "query-string";
 
-const baseUrl = "http://rtjam-nation.com";
-// const baseUrl = "http://localhost:8080";
-
 export class Client {
     csrfToken() {
         if (window && window.localStorage) {
@@ -13,7 +10,7 @@ export class Client {
     }
 
     async action(verb = "get", path: string, data: any = {}) {
-        let url = baseUrl + path;
+        let url = path;
         // OK, lame ass hack, but if the url is a get, we need to code any parameters
         // into the url.  If now, we put them in the body.
         let args = data;

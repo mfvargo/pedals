@@ -5,7 +5,7 @@ import { HandlerContext } from "../contexts/HandlerContext";
 const client = new Client();
 
 export function useApi() {
-  const { errorHandler, sessionHandler } = useContext(HandlerContext);
+  const { errorHandler, sessionHandler, configHandler } = useContext(HandlerContext);
   const [response, setResponse] = useState<any>(undefined);
   const [loading, setLoading] = useState(false);
 
@@ -18,7 +18,8 @@ export function useApi() {
 
     let apiResponse: { [key: string]: any };
     try {
-      apiResponse = await client.action(verb, path, data);
+      const url = configHandler.api_url + path;
+      apiResponse = await client.action(verb, url, data);
       console.log(apiResponse);
       setResponse(apiResponse);
 

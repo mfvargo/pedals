@@ -4,14 +4,13 @@ use std::time::Duration;
 
 use rtjam_rust::common::jam_nation_api::JamNationApi;
 use rtjam_rust::pedals::pedal_board::PedalBoard;
-use rtjam_rust::sound::{ jack_thread, alsa_thread };
 use rtjam_rust::sound::param_message::{JamParam, ParamMessage};
+use rtjam_rust::sound::{alsa_thread, jack_thread};
 use rtjam_rust::utils::get_my_mac_address;
 use rtjam_rust::JamEngine;
 use serde_json::{json, Value};
 use tauri::{ipc::Channel, Error};
 use thread_priority::{ThreadBuilder, ThreadPriority};
-
 
 pub struct JamUnit {
     board: PedalBoard,
@@ -31,8 +30,14 @@ impl JamUnit {
             pedal_tx: None,
         }
     }
-    pub fn start(&mut self, ev: Channel<Value>) -> Result<Value, Error> {
-        println!("start me up!");
+    pub fn start(&mut self, 
+        ev: Channel<Value>, 
+        use_alsa: bool,
+        api_url: String,
+        in_dev: String,
+        out_dev: String,
+    ) -> Result<Value, Error> {
+        println!("start me up!  {}", api_url);
 
         if self.pinging {
             println!("preventing double start");
@@ -43,15 +48,16 @@ impl JamUnit {
         for pedal in ["Champ", "Sigma Reverb", "Delay", "Compressor"] {
             self.board.insert_pedal(pedal, 0);
         }
-        let api_url = String::from("http://rtjam-nation.com/api/1/");
+        let url = api_url + "/api/1/";
         let mac_address = get_my_mac_address().unwrap();
         let git_hash = "what is my hash";
 
         // Create an api endpoint and register this jamUnit
-        let mut api = JamNationApi::new(api_url.as_str(), mac_address.as_str(), git_hash);
+        let mut api = JamNationApi::new(url.as_str(), mac_address.as_str(), git_hash);
         let _register = api.jam_unit_register();
 
         self.token = String::from(api.get_token());
+        println!("jam_unit_registerd: {}", self.token);
 
         if !self.pinging && api.has_token() {
             self.pinging = true;
@@ -94,20 +100,26 @@ impl JamUnit {
                 // let _jack_thread_handle = thread::spawn(move || {
                 //     let _res = jack_thread::run(engine);
                 // });
-                let builder = ThreadBuilder::default()
-                    .name("Real-Time Thread".to_string())
-                    .priority(ThreadPriority::Max);
-        
-                let _alsa_handle = builder.spawn(move |_result| {
-                    match alsa_thread::run(engine, "plughw:CODEC", "plughw:CODEC") {
-                        Ok(()) => {
-                        println!("alsa ended with OK");
+                if use_alsa {
+                    let builder = ThreadBuilder::default()
+                        .name("Real-Time Thread".to_string())
+                        .priority(ThreadPriority::Max);
+
+                    let _alsa_handle = builder.spawn(move |_result| {
+                        match alsa_thread::run(engine, &in_dev, &out_dev) {
+                            Ok(()) => {
+                                println!("alsa ended with OK");
+                            }
+                            Err(e) => {
+                                println!("alsa exited with error {}", e);
+                            }
                         }
-                        Err(e) => {
-                            println!("alsa exited with error {}", e);
-                        }
-                    }
-                })?;
+                    })?;
+                } else {
+                    let _jack_thread_handle = thread::spawn(move || {
+                        let _res = jack_thread::run(engine);
+                    });
+                }
             }
             Err(e) => {
                 dbg!(e);
@@ -146,7 +158,6 @@ impl JamUnit {
                         if let Some(tx) = &self.cmd_tx {
                             let _r = tx.send(msg);
                         }
-        
                     }
                 }
             }
@@ -187,10 +198,7 @@ impl JamUnit {
     }
 
     // This message needs to get formatted and stuff
-    fn status_msg_forwarder(
-        ev: Channel<Value>,
-        msg: mpsc::Receiver<Value>,
-    ) -> Result<(), Error> {
+    fn status_msg_forwarder(ev: Channel<Value>, msg: mpsc::Receiver<Value>) -> Result<(), Error> {
         // My job is to receive status messages from the jamEngine and convert them into events
         let mut looping = true;
         while looping {
