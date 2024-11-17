@@ -3482,7 +3482,7 @@ dependencies = [
 [[package]]
 name = "rtjam_rust"
 version = "0.1.0"
-source = "git+https://github.com/mfvargo/rtjam_rust.git?branch=main#967f0b9326727b1fe1de03e3d24c6508e0a675fc"
+source = "git+https://github.com/mfvargo/rtjam_rust.git?branch=main#525344dd3fb154d62ed097b649b5e94a1aba8629"
 dependencies = [
  "alsa",
  "anyhow",
@@ -5268,7 +5268,7 @@ version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf221c93e13a30d793f7645a0e7762c55d169dbb0a49671918a2319d289b10bb"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.48.0",
 ]
 
 [[package]]

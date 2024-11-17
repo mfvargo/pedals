@@ -72,6 +72,7 @@ export enum RTJamParameters {
   paramSetUpdateInterval,
   paramRebootDevice = 9998,
   paramShutdownDevice = 9999,
+  paramStopAudio,
 }
 
 export interface MidiEvent {
