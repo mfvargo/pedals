@@ -20,6 +20,10 @@ body {
 .footer {
   margin-top: auto;
 
+  &__horizontal-line {
+    margin-top: 0;
+  }
+
   &__link {
     display: flex;
     flex-direction: column;

@@ -2,17 +2,84 @@
   // max-width: 92rem;
   // margin: 0 0.5rem;
 
+  align-items: flex-start;
+  background-color: transparent;
+  display: flex;
+  flex-direction: row-reverse;
+  height: 100%;
+  left: 0;
+  overflow: hidden;
+  padding: 1.5rem 0.75rem 1.5rem 0.5rem;
+  position: absolute;
+  top: 0;
+  z-index: 100;
+
+  &__toggle-button {
+    background-color: $color-blue;
+    border-radius: 20px;
+    border: none;
+    color: $color-white;
+    font-size: 16px;
+    margin-left: calc(-600px + (1rem));
+    padding: 5px 15px;
+    transition:
+      border-radius 0.3s ease,
+      font-size 0.3s ease,
+      height 0.3s ease,
+      margin-left 0.3s ease,
+      padding 0.3s ease,
+      width 0.3s ease;
+
+    &::before {
+      display: inline-block;
+    }
+
+    &:hover {
+      background-color: darken($color-blue, 10%);
+    }
+  }
+
+  &__tab-container {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    width: 600px;
+  }
+
+  &.open {
+    background-color: lighten($color-blue, 45%);
+
+    .room-select__toggle-button {
+      border-radius: 50%;
+      font-size: 0; // hides text during transition
+      height: 35px;
+      margin-left: -30px; // to move to left of tab-container with extra padding
+      padding: 0;
+      width: 35px;
+      z-index: 1; // place on top of the tab-container
+
+      &::before {
+        color: $color-white;
+        content: "X";
+        display: block;
+        font-size: 16px;
+      }
+    }
+
+    .room-select__tab-container {
+      transform: translateX(0);
+    }
+  }
+
   @include respond(phone) {
     // width: 100%;
     max-width: 52rem;
   }
 
   &__nav-column {
-    margin: 0 0.4rem;
+    margin-right: 0.4rem;
   }
 
   &__nav {
-    text-align: center;
     cursor: pointer;
   }
 

@@ -352,6 +352,7 @@ export class JamUnitHandler {
 
   // Subsscription Functions
   subscribe(topic: "unit" | "levels" | "boards" | "midi", keyName: string, callbackFunc: any) {
+    console.log("sub for " + topic + " key: " + keyName);
     this.dispatchers[topic].subscribe(keyName, callbackFunc);
   }
 

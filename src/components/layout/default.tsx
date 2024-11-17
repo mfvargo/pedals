@@ -5,6 +5,7 @@ import { WebsockStream } from "../chatControl/WebSockStream";
 import SuccessAlert from "../alerts/success";
 import ErrorAlert from "../alerts/error";
 import Footer from "./footer";
+import { UnitChat } from "../chatControl/unitChat";
 
 const DefaultLayout = ({ children }: any) => {
   // No container on this page bc of pedalboards
@@ -15,6 +16,7 @@ const DefaultLayout = ({ children }: any) => {
         <ErrorAlert />
       </Container>
       {children}
+      <UnitChat/>
       <WebsockStream />
       <Footer />
     </>

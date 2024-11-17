@@ -83,10 +83,16 @@ export const UnitChat = () => {
 
   async function loadUnit() {
     console.log("loadUnit: " + token);
+    // Can't load if we don't have a token
     if (!token) {
       return;
     }
-    const { jamUnit } = await execApi({ token: token }, "/api/1/jamUnit", "get");
+    const response = await execApi({ token: token }, "/api/1/jamUnit", "get");
+    if (!response?.jamUnit) {
+      // Can't load if we are not logged in
+      return;
+    }
+    const { jamUnit } = response;
     jamUnitHandler.setJamUnitData(jamUnit);
     jamUnitHandler.setUnitName(jamUnit.name, jamUnit.token);
     jamUnitHandler.setUnitSettings(jamUnit.settings);
