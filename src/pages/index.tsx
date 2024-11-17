@@ -1,11 +1,11 @@
 import { Component } from "react";
-import SignIn from "./sign-in";
+import Welcome from "../components/welcome";
 
 export default class Index extends Component {
   render() {
     return (
       <div className="SystemDescription">
-        <SignIn />
+        <Welcome />
       </div>
     );
   }

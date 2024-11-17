@@ -1,8 +1,8 @@
 import { SessionLogin } from "../nation";
 type UserInfo = Awaited<ReturnType<typeof SessionLogin.prototype.runWithinTransaction>>;
 
-// const hostServer = "localhost:8080";
-const hostServer = "rtjam-nation.com"
+const hostServer = "localhost:8080";
+// const hostServer = "rtjam-nation.com"
 
 export class ConfigHandler {
   api_url: string;
