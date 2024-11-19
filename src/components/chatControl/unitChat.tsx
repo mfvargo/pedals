@@ -21,27 +21,36 @@ export const UnitChat = () => {
   // Number of players in the room
   const [playerCount, setPlayerCount] = useState<Number>(0);
   // event handler for messages from the unit
-  const [_ev, setEv] = useState<Channel<string>>();
+  const [ev, setEv] = useState<Channel<string>>();
   
   async function start_me_up() {
       console.log("starting up the engine");
-      const ev = new Channel<string>();
-      ev.onmessage = (message: any) => {
+      const chan = new Channel<string>();
+      chan.onmessage = (message: any) => {
         processJamUnitEvent(message);
       }
-      setEv(ev);
+      setEv(chan);
       const tok: string = await invoke("start", 
         {
           // Args to start functiion in lib.rs
-          onEvent: ev, 
-          useAlsa: configHandler.use_alsa,
           apiUrl: configHandler.api_url,
-          inDev: configHandler.in_device,
-          outDev: configHandler.out_device,
         }
       );
       console.log("start gave me: " + tok);
       setToken(tok);
+  }
+
+  async function start_audio() {
+    await invoke("start_audio", 
+      {
+        // Args to start_audio functiion in lib.rs
+        onEvent: ev, 
+        useAlsa: configHandler.use_alsa,
+        inDev: configHandler.in_device,
+        outDev: configHandler.out_device,
+      }
+    );
+
   }
   
   useEffect(() => {
@@ -50,8 +59,13 @@ export const UnitChat = () => {
   }, []);
 
   useEffect(() => {
+    // When event channel is set start it up
+    start_audio();
+  }, [ev]);
+
+  useEffect(() => {
     console.log("got a token: " + token);
-    jamUnitHandler.setApiFunction(sendMessage, loadUnit);
+    jamUnitHandler.setApiFunction(sendMessage, loadUnit, start_audio);
     unitInit();
     const newTimer = setInterval(() => {
       jamUnitHandler.setUpdateInterval(150);
@@ -59,7 +73,7 @@ export const UnitChat = () => {
     }, 3000);
     return () => {
       clearInterval(newTimer);
-      jamUnitHandler.setApiFunction(console.log, null);
+      jamUnitHandler.setApiFunction(console.log, null, null);
     };
   }, [token]);
 

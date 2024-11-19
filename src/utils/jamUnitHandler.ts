@@ -101,6 +101,7 @@ export class JamUnitHandler {
   updatedModel: UnitModel; // Aggregate data model of the unit
   apiFunction: any; // Function to call to send api requests
   reloadFunction: any; // Function to reload the unit data from cloud
+  startAudioFunction: any; // Function to start audio on the rust side
   // event dispatchers organized by topic
   dispatchers: Dispatchers;
   latencies: Latency[];
@@ -108,6 +109,7 @@ export class JamUnitHandler {
   constructor() {
     this.apiFunction = console.log;
     this.reloadFunction = console.log;
+    this.startAudioFunction = console.log;
     this.lastHeardFrom = new Date();
     this.dispatchers = {
       unit: new EventDispatcher(),
@@ -165,9 +167,14 @@ export class JamUnitHandler {
     this.latencies = [];
   }
 
-  setApiFunction(apiFunction: { (msg: any): void; (...data: any[]): void; }, reloadFunction: (() => Promise<void>) | null) {
+  setApiFunction(
+      apiFunction: { (msg: any): void; (...data: any[]): void; }, 
+      reloadFunction: (() => Promise<void>) | null,
+      startAudioFunction: (() => Promise<void>) | null
+    ) {
     this.apiFunction = apiFunction;
     this.reloadFunction = reloadFunction;
+    this.startAudioFunction = startAudioFunction;
   }
 
   setSocketUp(socketUp: boolean) {
@@ -369,6 +376,14 @@ export class JamUnitHandler {
     }
   }
 
+  stopSoundThread() {
+    this.apiFunction({ param: RTJamParameters.paramStopAudio });
+  }
+
+  startAudio() {
+    this.startAudioFunction();
+  }
+  
   dumpModelToConsole() {
     console.log(this.updatedModel);
     console.log(this.roomInfo);

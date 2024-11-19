@@ -11,14 +11,24 @@ struct UnitState(Mutex<JamUnit>);
 #[tauri::command]
 fn start(
     unit_state: State<'_, UnitState>,
-    on_event: Channel<Value>,
-    use_alsa: bool,
     api_url: String,
-    in_dev: String,
-    out_dev: String
 ) -> Result<Value, Error> {
     let mut unit = unit_state.0.lock().unwrap();
-    unit.start(on_event, use_alsa, api_url, in_dev, out_dev)
+    unit.start(api_url)
+}
+
+
+#[tauri::command]
+fn start_audio(
+    unit_state: State<'_, UnitState>, 
+    on_event: Channel<Value>,
+    use_alsa: bool,
+    in_dev: String,
+    out_dev: String
+) -> Result<(), Error> {
+    let mut unit = unit_state.0.lock().unwrap();
+    unit.start_audio(on_event, use_alsa, in_dev, out_dev)?;
+    Ok(())
 }
 
 #[tauri::command]
@@ -34,7 +44,7 @@ pub fn run() {
         .plugin(tauri_plugin_http::init())
         .manage(UnitState(Mutex::new(JamUnit::new())))
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![start, send_command])
+        .invoke_handler(tauri::generate_handler![start, start_audio, send_command])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

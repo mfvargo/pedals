@@ -13,29 +13,27 @@ use tauri::{ipc::Channel, Error};
 use thread_priority::{ThreadBuilder, ThreadPriority};
 
 pub struct JamUnit {
-    board: PedalBoard,
     token: String,
     pinging: bool,
     cmd_tx: Option<mpsc::Sender<ParamMessage>>,
     pedal_tx: Option<mpsc::Sender<PedalBoard>>,
+    audio_on: bool,
 }
+
+const GIT_HASH: &str = "What is my hash?";
 
 impl JamUnit {
     pub fn new() -> JamUnit {
         JamUnit {
-            board: PedalBoard::new(0),
             token: String::from(""),
             pinging: false,
             cmd_tx: None,
             pedal_tx: None,
+            audio_on: false,
         }
     }
     pub fn start(&mut self, 
-        ev: Channel<Value>, 
-        use_alsa: bool,
         api_url: String,
-        in_dev: String,
-        out_dev: String,
     ) -> Result<Value, Error> {
         println!("start me up!  {}", api_url);
 
@@ -43,27 +41,36 @@ impl JamUnit {
             println!("preventing double start");
             return Ok(json!(self.token));
         }
-
-        // Insert pedals in reverse order (it puts each on at the front)
-        for pedal in ["Champ", "Sigma Reverb", "Delay", "Compressor"] {
-            self.board.insert_pedal(pedal, 0);
-        }
         let url = api_url + "/api/1/";
         let mac_address = get_my_mac_address().unwrap();
-        let git_hash = "what is my hash";
 
         // Create an api endpoint and register this jamUnit
-        let mut api = JamNationApi::new(url.as_str(), mac_address.as_str(), git_hash);
+        let mut api = JamNationApi::new(url.as_str(), mac_address.as_str(), GIT_HASH);
         let _register = api.jam_unit_register();
 
         self.token = String::from(api.get_token());
-        println!("jam_unit_registerd: {}", self.token);
+        println!("jam_unit_registered: {}", self.token);
 
         if !self.pinging && api.has_token() {
             self.pinging = true;
             let _ping_handle = thread::spawn(move || {
                 let _res = Self::jam_unit_ping_thread(api);
             });
+        }
+
+        Ok(json!(self.token))
+    }
+
+    // Use this to start the audio thread
+    pub fn start_audio(&mut self,
+        ev: Channel<Value>, 
+        use_alsa: bool,
+        in_dev: String,
+        out_dev: String
+    ) -> Result<(), Error> {
+
+        if self.audio_on {
+            return Ok(());
         }
 
         // This is the channel the audio engine will use to send us status data
@@ -92,7 +99,7 @@ impl JamUnit {
             command_rx,
             pedal_rx,
             &token_copy,
-            git_hash,
+            GIT_HASH,
             false,
         ) {
             Ok(engine) => {
@@ -127,11 +134,11 @@ impl JamUnit {
         }
 
         // Spawn the message forwarder
-        let _ping_handle = thread::spawn(move || {
+        let _fwd_handle = thread::spawn(move || {
             let _res = Self::status_msg_forwarder(ev, status_data_rx);
         });
-
-        Ok(json!(self.token))
+        self.audio_on = true;
+        Ok(())
     }
 
     // Use this to send messages to the jamEnging
@@ -152,6 +159,15 @@ impl JamUnit {
                                 let _res = pedal_tx.send(board);
                             }
                         }
+                    }
+                    JamParam::StopAudio => {
+                        // Pass the message to the Engine to have it kill its threads
+                        if let Some(tx) = &self.cmd_tx {
+                            let _r = tx.send(msg);
+                        }
+                        self.cmd_tx = None;
+                        self.pedal_tx = None;
+                        self.audio_on = false;
                     }
                     _ => {
                         // Default, send this command to the engine

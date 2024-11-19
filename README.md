@@ -6,7 +6,7 @@ This template should help get you started developing with Tauri, React and Types
 
 - [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
 
-## Setup a pi with 64 bit os
+## Setup a pi 5 with 64 bit os
 
 install the latest 64 bit pi os <https://www.raspberrypi.com/software/>
 
@@ -47,12 +47,10 @@ install necessary libraries
 ```bash
 sudo apt install jackd2
 sudo apt install libjack-dev
-sudo apt install libssl-dev
-sudo apt-get install build-essential libgtk-3-dev
-sudo apt install libjavascriptcoregtk-4.1-dev
-sudo apt install libsoup-3.0-dev
-sudo apt install libwebkit2gtk-4.1-dev
 sudo apt install libalsa-ocaml-dev
+sudo apt install libssl-dev
+sudo apt-get install build-essential libgtk-4-dev
+sudo apt install libwebkit2gtk-4.1-dev
 ```
 
 get code and build
